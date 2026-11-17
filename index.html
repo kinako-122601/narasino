@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f5ed" />
+    <meta
+      name="description"
+      content="船橋の大盛り・食べ放題スポットをみんなで見つける、まんぷく案内所。"
+    />
+    <title>ふなばし満腹案内所｜船橋の大食いスポット</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="ふなばし満腹案内所 ホーム">
+        <span class="brand-mark" aria-hidden="true">満</span>
+        <span class="brand-name">ふなばし<span>満腹案内所</span></span>
+      </a>
+      <nav class="main-nav" aria-label="メインナビゲーション">
+        <a class="nav-link active" href="#spots">お店を探す</a>
+        <a class="nav-link" href="#about">このサイトについて</a>
+      </nav>
+      <button class="button button-dark header-button add-post-button" id="open-add-shop" type="button">
+        <span aria-hidden="true">＋</span> お店を投稿
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> FUNABASHI · CHIBA</p>
+          <h1 id="hero-title">今日は、<br />おなかいっぱい<span>のその先へ。</span></h1>
+          <p class="hero-description">
+            船橋の「たくさん食べたい！」を叶えるお店を、<br class="desktop-break" />
+            みんなの投稿とレビューで見つけよう。
+          </p>
+          <a class="hero-link" href="#spots">満腹スポットを見つける <span aria-hidden="true">↓</span></a>
+          <div class="hero-stats" aria-label="掲載情報">
+            <div><strong id="spot-count">0</strong><span>SPOTS</span></div>
+            <div class="stats-divider"></div>
+            <div><strong id="review-count">0</strong><span>REVIEWS</span></div>
+            <p>みんなの「おいしい」が<br />集まっています。</p>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="hero-sticker sticker-top">FUNABASHI<br />GOURMET CLUB</div>
+          <div class="hero-bowl">
+            <span class="bowl-steam steam-one"></span>
+            <span class="bowl-steam steam-two"></span>
+            <span class="bowl-steam steam-three"></span>
+            <div class="bowl-food">
+              <i class="food-noodle"></i>
+              <i class="food-egg"></i>
+              <i class="food-meat"></i>
+              <i class="food-green"></i>
+              <i class="food-green green-two"></i>
+            </div>
+            <div class="bowl-rim"></div>
+            <div class="bowl-body"><span>満腹</span></div>
+            <div class="bowl-foot"></div>
+          </div>
+          <div class="hero-sticker sticker-bottom"><span>おなかも<br />気持ちも</span><strong>大満足！</strong></div>
+          <span class="art-spark spark-one">✳</span>
+          <span class="art-spark spark-two">✳</span>
+          <span class="art-doodle">good<br />food!</span>
+        </div>
+        <div class="hero-bottom-note"><span>01</span> LOCAL FOOD, LOCAL LOVE</div>
+      </section>
+
+      <section class="spots-section" id="spots" aria-labelledby="spots-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-dot"></span> FIND YOUR FAVORITE</p>
+            <h2 id="spots-title">船橋の<span>満腹スポット</span></h2>
+            <p class="section-subtitle">大盛りも、食べ放題も。あなたの「食べたい！」にぴったりのお店。</p>
+          </div>
+          <button class="button button-outline desktop-add add-post-button" id="open-add-shop-secondary" type="button">
+            <span aria-hidden="true">＋</span> お店を紹介する
+          </button>
+        </div>
+
+        <div class="filter-toolbar">
+          <label class="search-box">
+            <span class="search-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">キーワードで検索</span>
+            <input id="search-input" type="search" placeholder="店名・メニュー・エリアで検索" />
+            <kbd>⌕</kbd>
+          </label>
+          <div class="filter-controls">
+            <label class="filter-select-label">
+              <span class="visually-hidden">ジャンル</span>
+              <select id="category-filter">
+                <option value="all">すべてのジャンル</option>
+                <option value="大盛り">大盛り</option>
+                <option value="食べ放題">食べ放題</option>
+                <option value="デカ盛り">デカ盛り</option>
+                <option value="コスパ">コスパ</option>
+              </select>
+            </label>
+            <label class="filter-select-label sort-select">
+              <span class="visually-hidden">並び替え</span>
+              <select id="sort-filter">
+                <option value="recommended">おすすめ順</option>
+                <option value="rating">評価が高い順</option>
+                <option value="reviews">レビューが多い順</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="category-chips" aria-label="ジャンルで絞り込む">
+          <button class="category-chip selected" type="button" data-category="all">すべて <span>✳</span></button>
+          <button class="category-chip" type="button" data-category="大盛り">大盛り</button>
+          <button class="category-chip" type="button" data-category="食べ放題">食べ放題</button>
+          <button class="category-chip" type="button" data-category="デカ盛り">デカ盛り</button>
+          <button class="category-chip" type="button" data-category="コスパ">コスパ</button>
+        </div>
+
+        <p class="backend-status" id="backend-status" role="status" hidden></p>
+        <div class="results-line">
+          <p><strong id="results-count">0</strong>件のお店</p>
+          <p class="sample-note"><span aria-hidden="true">ⓘ</span> お店とレビューは投稿すると閲覧者全員に共有されます</p>
+        </div>
+        <div class="spot-grid" id="spot-grid" aria-live="polite"></div>
+        <div class="empty-state" id="empty-state" hidden>
+          <span class="empty-icon" aria-hidden="true">丼</span>
+          <h3>お店が見つかりませんでした</h3>
+          <p>検索条件を変えるか、あなたのおすすめを教えてください。</p>
+          <button class="button button-dark add-post-button" id="empty-add-shop" type="button">お店を投稿する</button>
+        </div>
+      </section>
+
+      <section class="community-banner" id="about">
+        <div class="community-mark" aria-hidden="true">満<br />腹</div>
+        <div>
+          <p class="eyebrow">YOUR LOCAL GOURMET GUIDE</p>
+          <h2>あなたの「推し満腹店」、<br class="mobile-break" />教えてください。</h2>
+          <p>地元の人が知っているお店も、最近見つけた穴場も。みんなの投稿で船橋の満腹マップを育てよう。</p>
+        </div>
+        <button class="button button-light add-post-button" id="open-add-shop-banner" type="button">お店を投稿する <span aria-hidden="true">↗</span></button>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="#">
+        <span class="brand-mark" aria-hidden="true">満</span>
+        <span class="brand-name">ふなばし<span>満腹案内所</span></span>
+      </a>
+      <p>船橋の「おなかいっぱい」を、みんなで。</p>
+      <small>© 2026 FUNABASHI MANPUKU GUIDE</small>
+    </footer>
+
+    <dialog class="modal" id="shop-modal" aria-labelledby="shop-modal-title">
+      <form class="modal-content" id="shop-form">
+        <button class="modal-close" type="button" data-close aria-label="閉じる">×</button>
+        <p class="eyebrow"><span class="eyebrow-dot"></span> SHARE YOUR FAVORITE</p>
+        <h2 id="shop-modal-title">おすすめのお店を<span>投稿</span></h2>
+        <p class="modal-intro">あなたの「ここ、満腹になれるよ！」をみんなに教えてください。</p>
+        <label class="field-label">お店の名前 <span class="required">必須</span>
+          <input name="name" required maxlength="60" placeholder="例：〇〇食堂 船橋店" />
+        </label>
+        <div class="field-row">
+          <label class="field-label">エリア <span class="required">必須</span>
+            <input name="area" required maxlength="40" placeholder="例：船橋駅周辺" />
+          </label>
+          <label class="field-label">ジャンル <span class="required">必須</span>
+            <select name="category" required>
+              <option value="" disabled selected>選んでください</option>
+              <option>大盛り</option><option>食べ放題</option><option>デカ盛り</option><option>コスパ</option>
+            </select>
+          </label>
+        </div>
+        <label class="field-label">おすすめポイント <span class="required">必須</span>
+          <textarea name="description" required maxlength="180" rows="3" placeholder="ボリュームやおすすめメニューなど"></textarea>
+        </label>
+        <label class="field-label">おすすめメニュー <span class="optional">任意</span>
+          <input name="menu" maxlength="60" placeholder="例：からあげ定食 ごはん大盛り" />
+        </label>
+        <label class="field-label">予算の目安 <span class="optional">任意</span>
+          <input name="price" maxlength="30" placeholder="例：〜1,000円" />
+        </label>
+        <button class="button button-dark modal-submit" type="submit">お店を投稿する <span aria-hidden="true">↗</span></button>
+        <p class="form-note">投稿内容はこのブラウザーに保存されます。</p>
+      </form>
+    </dialog>
+
+    <dialog class="modal detail-modal" id="detail-modal" aria-labelledby="detail-title">
+      <div class="modal-content detail-content">
+        <button class="modal-close" type="button" data-close aria-label="閉じる">×</button>
+        <div id="detail-body"></div>
+      </div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="supabase-config.js"></script>
+  </body>
+</html>
