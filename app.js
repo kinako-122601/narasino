@@ -1,55 +1,63 @@
 const starterSpots = [
   {
-    id: "sample-1",
-    name: "船橋駅周辺の大盛り定食（サンプル）",
-    area: "船橋駅周辺",
-    category: "大盛り",
-    description: "ごはん大盛りの定食を紹介する表示例です。実在する店舗の情報ではありません。",
-    menu: "からあげ定食",
-    price: "〜1,000円",
+    id: "00000000-0000-4000-8000-000000000001",
+    name: "二葉海神 第一支店",
+    area: "海神エリア",
+    category: "デカ盛り",
+    description: "カツカレーやカツ丼のボリュームで知られる食堂。普通盛りでも大盛り相当との紹介があります。",
+    menu: "カツカレー・カツ丼",
+    price: "1,000円台（参考）",
     emoji: "🍱",
     color: "#e9c995",
     reviews: [],
-    isSample: true,
+    isSeed: true,
+    isFromDatabase: false,
+    sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
   },
   {
-    id: "sample-2",
-    name: "西船橋エリアの食べ放題（サンプル）",
-    area: "西船橋エリア",
-    category: "食べ放題",
-    description: "お肉をたっぷり楽しむ食べ放題の表示例です。実在する店舗の情報ではありません。",
-    menu: "焼肉食べ放題",
-    price: "2,000円〜",
-    emoji: "🥩",
+    id: "00000000-0000-4000-8000-000000000002",
+    name: "福徳食堂",
+    area: "原木中山エリア",
+    category: "大盛り",
+    description: "ボリュームのある定食が評判。特にチキンカツ定食をがっつり食べたい日に。",
+    menu: "チキンカツ定食",
+    price: "1,000円台（参考）",
+    emoji: "🍗",
     color: "#edc8aa",
     reviews: [],
-    isSample: true,
+    isSeed: true,
+    isFromDatabase: false,
+    sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
   },
   {
-    id: "sample-3",
-    name: "北習志野のデカ盛りカレー（サンプル）",
-    area: "北習志野エリア",
-    category: "デカ盛り",
-    description: "山盛りカレーを紹介する表示例です。実在する店舗の情報ではありません。",
-    menu: "メガ盛りカレー",
-    price: "〜1,500円",
-    emoji: "🍛",
+    id: "00000000-0000-4000-8000-000000000003",
+    name: "大乃家食堂",
+    area: "船橋市地方卸売市場",
+    category: "大盛り",
+    description: "船橋市場の食堂。海鮮がたっぷりのった丼は、仕入れによってネタが変わるそうです。",
+    menu: "海鮮丼",
+    price: "1,000円台（参考）",
+    emoji: "🍣",
     color: "#e5d19c",
     reviews: [],
-    isSample: true,
+    isSeed: true,
+    isFromDatabase: false,
+    sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
   },
   {
-    id: "sample-4",
-    name: "津田沼エリアのコスパ中華（サンプル）",
-    area: "津田沼エリア",
-    category: "コスパ",
-    description: "ボリュームたっぷりの町中華を紹介する表示例です。実在する店舗の情報ではありません。",
-    menu: "ラーメンと半チャーハン",
-    price: "〜1,000円",
-    emoji: "🍜",
+    id: "00000000-0000-4000-8000-000000000004",
+    name: "ビッグテキサス 船橋店",
+    area: "船橋本町エリア",
+    category: "デカ盛り",
+    description: "リブステーキはサイズを選べ、最大1kgまで対応との紹介があります。食べる量に合わせて注文できます。",
+    menu: "リブステーキ（サイズ選択可）",
+    price: "要確認",
+    emoji: "🥩",
     color: "#cddbc4",
     reviews: [],
-    isSample: true,
+    isSeed: true,
+    isFromDatabase: false,
+    sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
   },
 ];
 
@@ -128,11 +136,16 @@ function mapReview(review) {
 }
 
 function mapSpot(spot) {
+  const starterSpot = starterSpots.find((item) => item.id === spot.id);
   return {
+    ...starterSpot,
     ...spot,
-    emoji: "🍽️",
-    color: "#dce7d4",
+    emoji: starterSpot?.emoji || "🍽️",
+    color: starterSpot?.color || "#dce7d4",
     stamp: "みんなの\nおすすめ",
+    isSeed: Boolean(starterSpot),
+    isFromDatabase: true,
+    sourceUrl: starterSpot?.sourceUrl,
     reviews: (spot.reviews || []).map(mapReview)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
   };
@@ -150,7 +163,10 @@ async function loadSpots() {
       "shops?select=id,name,area,category,description,menu,price,created_at,reviews(id,nickname,rating,body,created_at)&order=created_at.desc",
     );
     if (!Array.isArray(rows)) throw new Error("Supabase returned an invalid shop list.");
-    spots = rows.length ? rows.map(mapSpot) : starterSpots;
+    const databaseSpots = rows.map(mapSpot);
+    const databaseSeedIds = new Set(databaseSpots.filter((spot) => spot.isSeed).map((spot) => spot.id));
+    const missingStarterSpots = starterSpots.filter((spot) => !databaseSeedIds.has(spot.id));
+    spots = [...databaseSpots, ...missingStarterSpots];
     setBackendStatus("");
   } catch (error) {
     console.error("共有データを読み込めませんでした。", error);
@@ -192,7 +208,7 @@ function render() {
       <article class="spot-card" tabindex="0" role="button" aria-label="${escapeHTML(spot.name)}の詳細とレビュー">
         <div class="card-visual" style="--card-bg:${escapeHTML(spot.color || "#e9eee2")}">
           <span class="card-category">${escapeHTML(spot.category)}</span>
-          ${spot.isSample ? '<span class="card-sample">サンプル</span>' : ""}
+          ${spot.isSeed ? '<span class="card-sample">初期掲載</span>' : ""}
           <span class="card-emoji" aria-hidden="true">${escapeHTML(spot.emoji || "🍽️")}</span>
           <span class="card-stamp">${stamp}</span>
         </div>
@@ -213,7 +229,7 @@ function render() {
 
   document.querySelector("#results-count").textContent = visibleSpots.length;
   document.querySelector("#empty-state").hidden = visibleSpots.length !== 0;
-  document.querySelector("#sample-note").hidden = !spots.some((spot) => spot.isSample);
+  document.querySelector("#sample-note").hidden = !spots.some((spot) => spot.isSeed);
   document.querySelector("#spot-count").textContent = spots.length;
   document.querySelector("#review-count").textContent = spots.reduce((count, spot) => count + spot.reviews.length, 0);
   grid.querySelectorAll(".spot-card").forEach((card, index) => {
@@ -255,6 +271,9 @@ function openDetails(id) {
         <p>${escapeHTML(review.text)}</p>
       </article>`).join("")
     : '<p class="no-reviews">まだレビューがありません。最初のレビューを書いてみませんか？</p>';
+  const sourceHTML = spot.sourceUrl
+    ? `<p class="source-note">掲載情報：<a href="${escapeHTML(spot.sourceUrl)}" target="_blank" rel="noopener noreferrer">TSグルメ（2026年5月）</a>。価格・営業時間は来店前にご確認ください。</p>`
+    : "";
 
   detailBody.innerHTML = `
     <div class="detail-heading">
@@ -263,6 +282,7 @@ function openDetails(id) {
       <span class="detail-area">⌖ ${escapeHTML(spot.area)}</span>
     </div>
     <p class="detail-summary">${escapeHTML(spot.description)}</p>
+    ${sourceHTML}
     <div class="detail-facts">
       <span>おすすめ <strong>${escapeHTML(spot.menu || "募集中")}</strong></span>
       <span>予算 <strong>${escapeHTML(spot.price || "情報なし")}</strong></span>
@@ -270,8 +290,8 @@ function openDetails(id) {
     </div>
     <div class="review-heading"><h3>みんなのレビュー</h3><span>${spot.reviews.length}件</span></div>
     <div class="review-list">${reviewsHTML}</div>
-    ${spot.isSample
-      ? '<p class="sample-detail-note">このカードは表示サンプルです。実際のお店を投稿すると、レビューを共有できます。</p>'
+    ${spot.isSeed && !spot.isFromDatabase
+      ? '<p class="sample-detail-note">この店舗のレビュー共有には、Supabaseへの初期店舗データ登録が必要です。</p>'
       : `<form class="review-form" id="review-form">
       <h3>このお店のレビューを書く</h3>
       <label class="field-label">ニックネーム
@@ -356,7 +376,6 @@ shopForm.addEventListener("submit", async (event) => {
     });
     if (!Array.isArray(result) || !result[0]) throw new Error("Supabase did not return the saved shop.");
     const spot = mapSpot({ ...result[0], reviews: [] });
-    spots = spots.filter((item) => !item.isSample);
     spots.unshift(spot);
     render();
     shopModal.close();
