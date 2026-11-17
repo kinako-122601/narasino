@@ -179,6 +179,11 @@ a { color: inherit; text-decoration: none; }
 .detail-heading h2 { margin-bottom: 5px; }
 .detail-area { color: var(--muted); font-size: 10px; }
 .detail-summary { margin: 19px 0; padding: 15px; border-radius: 4px; background: #f5f4ed; color: #656a60; font-size: 11px; line-height: 1.9; }
+.shop-contact { margin: 0 0 15px; padding: 13px 15px; border: 1px solid #efede6; border-radius: 4px; }
+.shop-contact-row { display: grid; grid-template-columns: 58px 1fr; gap: 10px; padding: 4px 0; color: #74786f; font-size: 10px; line-height: 1.8; }
+.shop-contact-row dt { color: #92948c; }
+.shop-contact-row dd { margin: 0; overflow-wrap: anywhere; }
+.shop-contact-row a, .source-note a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
 .detail-facts { display: flex; gap: 24px; color: #74786f; font-size: 10px; }
 .detail-facts strong { margin-left: 6px; color: var(--ink); }
 .review-heading { margin: 27px 0 10px; padding-top: 19px; border-top: 1px solid var(--line); display: flex; align-items: baseline; justify-content: space-between; }

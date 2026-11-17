@@ -2,9 +2,12 @@ const starterSpots = [
   {
     id: "00000000-0000-4000-8000-000000000001",
     name: "二葉海神 第一支店",
-    area: "海神エリア",
+    area: "海神（東海神駅）",
     category: "デカ盛り",
-    description: "カツカレーやカツ丼のボリュームで知られる食堂。普通盛りでも大盛り相当との紹介があります。",
+    description: "カツカレーやカツ丼の大盛りが評判の食堂。普通盛りでも大盛り相当との紹介があります。",
+    address: "千葉県船橋市海神2-14-19",
+    hours: "11:30〜15:00／17:00〜19:45（水曜休）",
+    phone: "047-422-6611",
     menu: "カツカレー・カツ丼",
     price: "1,000円台（参考）",
     emoji: "🍱",
@@ -13,13 +16,17 @@ const starterSpots = [
     isSeed: true,
     isFromDatabase: false,
     sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
+    infoUrl: "https://tabelog.com/chiba/A1202/A120201/12022060/",
   },
   {
     id: "00000000-0000-4000-8000-000000000002",
     name: "福徳食堂",
-    area: "原木中山エリア",
+    area: "本中山（原木中山駅）",
     category: "大盛り",
     description: "ボリュームのある定食が評判。特にチキンカツ定食をがっつり食べたい日に。",
+    address: "千葉県船橋市本中山7-7-1 メトロセンター内",
+    hours: "11:00〜23:15（定休日なしの情報あり）",
+    phone: "047-333-9870",
     menu: "チキンカツ定食",
     price: "1,000円台（参考）",
     emoji: "🍗",
@@ -28,6 +35,7 @@ const starterSpots = [
     isSeed: true,
     isFromDatabase: false,
     sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
+    infoUrl: "https://tabelog.com/chiba/A1202/A120201/12032352/",
   },
   {
     id: "00000000-0000-4000-8000-000000000003",
@@ -35,6 +43,9 @@ const starterSpots = [
     area: "船橋市地方卸売市場",
     category: "大盛り",
     description: "船橋市場の食堂。海鮮がたっぷりのった丼は、仕入れによってネタが変わるそうです。",
+    address: "千葉県船橋市市場1-8-1 船橋市地方卸売市場 関連棟7号通路",
+    hours: "市場営業日 7:00〜12:30（水・日・祝休の情報あり）",
+    phone: "047-423-2489",
     menu: "海鮮丼",
     price: "1,000円台（参考）",
     emoji: "🍣",
@@ -43,13 +54,17 @@ const starterSpots = [
     isSeed: true,
     isFromDatabase: false,
     sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
+    infoUrl: "https://funabashi-ichiba.jp/relation/5125/",
   },
   {
     id: "00000000-0000-4000-8000-000000000004",
     name: "ビッグテキサス 船橋店",
-    area: "船橋本町エリア",
+    area: "本町（京成船橋駅）",
     category: "デカ盛り",
     description: "リブステーキはサイズを選べ、最大1kgまで対応との紹介があります。食べる量に合わせて注文できます。",
+    address: "千葉県船橋市本町2-11-12 三善ビル1F",
+    hours: "11:30〜15:00／17:00〜23:00（定休日は店舗へ確認）",
+    phone: "047-433-0290",
     menu: "リブステーキ（サイズ選択可）",
     price: "要確認",
     emoji: "🥩",
@@ -58,6 +73,7 @@ const starterSpots = [
     isSeed: true,
     isFromDatabase: false,
     sourceUrl: "https://ts-gourmet.net/funabashi-dekamori/",
+    infoUrl: "https://page.line.me/468ewbak",
   },
 ];
 
@@ -146,6 +162,7 @@ function mapSpot(spot) {
     isSeed: Boolean(starterSpot),
     isFromDatabase: true,
     sourceUrl: starterSpot?.sourceUrl,
+    infoUrl: spot.info_url || starterSpot?.infoUrl,
     reviews: (spot.reviews || []).map(mapReview)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
   };
@@ -160,7 +177,7 @@ async function loadSpots() {
   }
   try {
     const rows = await supabaseRequest(
-      "shops?select=id,name,area,category,description,menu,price,created_at,reviews(id,nickname,rating,body,created_at)&order=created_at.desc",
+      "shops?select=id,name,area,category,description,menu,price,address,hours,phone,info_url,created_at,reviews(id,nickname,rating,body,created_at)&order=created_at.desc",
     );
     if (!Array.isArray(rows)) throw new Error("Supabase returned an invalid shop list.");
     const databaseSpots = rows.map(mapSpot);
@@ -191,7 +208,7 @@ function render() {
   const category = categoryFilter.value;
   let visibleSpots = spots.filter((spot) => {
     const matchesCategory = category === "all" || spot.category === category;
-    const searchable = [spot.name, spot.area, spot.category, spot.description, spot.menu].join(" ").toLocaleLowerCase("ja");
+    const searchable = [spot.name, spot.area, spot.category, spot.description, spot.menu, spot.address].join(" ").toLocaleLowerCase("ja");
     return matchesCategory && searchable.includes(query);
   });
 
@@ -255,6 +272,15 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
 }
 
+function safeWebUrl(value) {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
 function openDetails(id) {
   activeSpotId = id;
   const spot = spots.find((item) => item.id === id);
@@ -271,8 +297,26 @@ function openDetails(id) {
         <p>${escapeHTML(review.text)}</p>
       </article>`).join("")
     : '<p class="no-reviews">まだレビューがありません。最初のレビューを書いてみませんか？</p>';
-  const sourceHTML = spot.sourceUrl
-    ? `<p class="source-note">掲載情報：<a href="${escapeHTML(spot.sourceUrl)}" target="_blank" rel="noopener noreferrer">TSグルメ（2026年5月）</a>。価格・営業時間は来店前にご確認ください。</p>`
+  const addressHTML = spot.address
+    ? `<div class="shop-contact-row"><dt>住所</dt><dd>${escapeHTML(spot.address)} <a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent(spot.address)}" target="_blank" rel="noopener noreferrer">地図</a></dd></div>`
+    : "";
+  const hoursHTML = spot.hours
+    ? `<div class="shop-contact-row"><dt>営業時間</dt><dd>${escapeHTML(spot.hours)}</dd></div>`
+    : "";
+  const phoneHTML = spot.phone
+    ? `<div class="shop-contact-row"><dt>電話</dt><dd><a href="tel:${escapeHTML(spot.phone.replace(/[^\d+]/g, ""))}">${escapeHTML(spot.phone)}</a></dd></div>`
+    : "";
+  const contactHTML = addressHTML || hoursHTML || phoneHTML
+    ? `<dl class="shop-contact">${addressHTML}${hoursHTML}${phoneHTML}</dl>`
+    : "";
+  const infoUrl = safeWebUrl(spot.infoUrl);
+  const volumeSourceUrl = safeWebUrl(spot.sourceUrl);
+  const sourceLinks = [
+    infoUrl ? `<a href="${escapeHTML(infoUrl)}" target="_blank" rel="noopener noreferrer">店舗情報</a>` : "",
+    volumeSourceUrl ? `<a href="${escapeHTML(volumeSourceUrl)}" target="_blank" rel="noopener noreferrer">大盛り情報（TSグルメ）</a>` : "",
+  ].filter(Boolean);
+  const sourceHTML = sourceLinks.length
+    ? `<p class="source-note">出典：${sourceLinks.join(" ／ ")}。営業時間・価格は変更されることがあるため、来店前にご確認ください。</p>`
     : "";
 
   detailBody.innerHTML = `
@@ -282,6 +326,7 @@ function openDetails(id) {
       <span class="detail-area">⌖ ${escapeHTML(spot.area)}</span>
     </div>
     <p class="detail-summary">${escapeHTML(spot.description)}</p>
+    ${contactHTML}
     ${sourceHTML}
     <div class="detail-facts">
       <span>おすすめ <strong>${escapeHTML(spot.menu || "募集中")}</strong></span>
