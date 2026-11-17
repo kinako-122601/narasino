@@ -1,3 +1,58 @@
+const starterSpots = [
+  {
+    id: "sample-1",
+    name: "船橋駅周辺の大盛り定食（サンプル）",
+    area: "船橋駅周辺",
+    category: "大盛り",
+    description: "ごはん大盛りの定食を紹介する表示例です。実在する店舗の情報ではありません。",
+    menu: "からあげ定食",
+    price: "〜1,000円",
+    emoji: "🍱",
+    color: "#e9c995",
+    reviews: [],
+    isSample: true,
+  },
+  {
+    id: "sample-2",
+    name: "西船橋エリアの食べ放題（サンプル）",
+    area: "西船橋エリア",
+    category: "食べ放題",
+    description: "お肉をたっぷり楽しむ食べ放題の表示例です。実在する店舗の情報ではありません。",
+    menu: "焼肉食べ放題",
+    price: "2,000円〜",
+    emoji: "🥩",
+    color: "#edc8aa",
+    reviews: [],
+    isSample: true,
+  },
+  {
+    id: "sample-3",
+    name: "北習志野のデカ盛りカレー（サンプル）",
+    area: "北習志野エリア",
+    category: "デカ盛り",
+    description: "山盛りカレーを紹介する表示例です。実在する店舗の情報ではありません。",
+    menu: "メガ盛りカレー",
+    price: "〜1,500円",
+    emoji: "🍛",
+    color: "#e5d19c",
+    reviews: [],
+    isSample: true,
+  },
+  {
+    id: "sample-4",
+    name: "津田沼エリアのコスパ中華（サンプル）",
+    area: "津田沼エリア",
+    category: "コスパ",
+    description: "ボリュームたっぷりの町中華を紹介する表示例です。実在する店舗の情報ではありません。",
+    menu: "ラーメンと半チャーハン",
+    price: "〜1,000円",
+    emoji: "🍜",
+    color: "#cddbc4",
+    reviews: [],
+    isSample: true,
+  },
+];
+
 const supabaseConfig = window.SUPABASE_CONFIG || {};
 const supabaseUrl = String(supabaseConfig.url || "").replace(/\/+$/, "");
 const supabaseAnonKey = String(supabaseConfig.anonKey || "");
@@ -12,7 +67,7 @@ const detailBody = document.querySelector("#detail-body");
 const toast = document.querySelector("#toast");
 const shopForm = document.querySelector("#shop-form");
 const backendStatus = document.querySelector("#backend-status");
-let spots = [];
+let spots = starterSpots;
 let activeSpotId = null;
 let toastTimer;
 
@@ -85,7 +140,7 @@ function mapSpot(spot) {
 
 async function loadSpots() {
   if (!hasSupabaseConfig()) {
-    spots = [];
+    spots = starterSpots;
     setBackendStatus("共有機能を使うには、supabase-config.js に Supabase の Project URL と anon public key を設定してください。", true);
     render();
     return;
@@ -95,7 +150,7 @@ async function loadSpots() {
       "shops?select=id,name,area,category,description,menu,price,created_at,reviews(id,nickname,rating,body,created_at)&order=created_at.desc",
     );
     if (!Array.isArray(rows)) throw new Error("Supabase returned an invalid shop list.");
-    spots = rows.map(mapSpot);
+    spots = rows.length ? rows.map(mapSpot) : starterSpots;
     setBackendStatus("");
   } catch (error) {
     console.error("共有データを読み込めませんでした。", error);
@@ -137,6 +192,7 @@ function render() {
       <article class="spot-card" tabindex="0" role="button" aria-label="${escapeHTML(spot.name)}の詳細とレビュー">
         <div class="card-visual" style="--card-bg:${escapeHTML(spot.color || "#e9eee2")}">
           <span class="card-category">${escapeHTML(spot.category)}</span>
+          ${spot.isSample ? '<span class="card-sample">サンプル</span>' : ""}
           <span class="card-emoji" aria-hidden="true">${escapeHTML(spot.emoji || "🍽️")}</span>
           <span class="card-stamp">${stamp}</span>
         </div>
@@ -157,6 +213,7 @@ function render() {
 
   document.querySelector("#results-count").textContent = visibleSpots.length;
   document.querySelector("#empty-state").hidden = visibleSpots.length !== 0;
+  document.querySelector("#sample-note").hidden = !spots.some((spot) => spot.isSample);
   document.querySelector("#spot-count").textContent = spots.length;
   document.querySelector("#review-count").textContent = spots.reduce((count, spot) => count + spot.reviews.length, 0);
   grid.querySelectorAll(".spot-card").forEach((card, index) => {
@@ -213,7 +270,9 @@ function openDetails(id) {
     </div>
     <div class="review-heading"><h3>みんなのレビュー</h3><span>${spot.reviews.length}件</span></div>
     <div class="review-list">${reviewsHTML}</div>
-    <form class="review-form" id="review-form">
+    ${spot.isSample
+      ? '<p class="sample-detail-note">このカードは表示サンプルです。実際のお店を投稿すると、レビューを共有できます。</p>'
+      : `<form class="review-form" id="review-form">
       <h3>このお店のレビューを書く</h3>
       <label class="field-label">ニックネーム
         <input name="reviewer" required maxlength="30" placeholder="例：まんぷく太郎" />
@@ -231,9 +290,10 @@ function openDetails(id) {
         <textarea name="text" required maxlength="500" placeholder="食べた感想やおすすめポイントを書いてください"></textarea>
       </label>
       <button class="button button-dark" type="submit">レビューを投稿する <span aria-hidden="true">↗</span></button>
-    </form>`;
+    </form>`}`;
 
-  detailBody.querySelector("#review-form").addEventListener("submit", submitReview);
+  const reviewForm = detailBody.querySelector("#review-form");
+  if (reviewForm) reviewForm.addEventListener("submit", submitReview);
   if (!detailModal.open) detailModal.showModal();
 }
 
@@ -296,6 +356,7 @@ shopForm.addEventListener("submit", async (event) => {
     });
     if (!Array.isArray(result) || !result[0]) throw new Error("Supabase did not return the saved shop.");
     const spot = mapSpot({ ...result[0], reviews: [] });
+    spots = spots.filter((item) => !item.isSample);
     spots.unshift(spot);
     render();
     shopModal.close();
@@ -318,7 +379,6 @@ categoryFilter.addEventListener("change", () => {
     chip.classList.toggle("selected", chip.dataset.category === categoryFilter.value);
   });
   render();
-  loadSpots();
 });
 sortFilter.addEventListener("change", render);
 document.querySelectorAll(".category-chip").forEach((chip) => {
