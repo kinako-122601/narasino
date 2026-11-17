@@ -10,7 +10,9 @@ const starterSpots = [
     phone: "047-422-6611",
     menu: "カツカレー・カツ丼",
     price: "1,000円台（参考）",
-    emoji: "🍱",
+    image: "assets/food/curry-katsu.jpg",
+    imageAlt: "カツカレーの参考写真",
+    imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Chicken_katsu_curry.jpg",
     color: "#e9c995",
     reviews: [],
     isSeed: true,
@@ -29,7 +31,9 @@ const starterSpots = [
     phone: "047-333-9870",
     menu: "チキンカツ定食",
     price: "1,000円台（参考）",
-    emoji: "🍗",
+    image: "assets/food/chicken-cutlet.jpg",
+    imageAlt: "チキンカツ定食の参考写真",
+    imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Chicken_Cutlet_001.jpg",
     color: "#edc8aa",
     reviews: [],
     isSeed: true,
@@ -48,7 +52,9 @@ const starterSpots = [
     phone: "047-423-2489",
     menu: "海鮮丼",
     price: "1,000円台（参考）",
-    emoji: "🍣",
+    image: "assets/food/seafood-bowl.jpg",
+    imageAlt: "海鮮丼の参考写真",
+    imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Seafood_bowl.jpg",
     color: "#e5d19c",
     reviews: [],
     isSeed: true,
@@ -67,7 +73,9 @@ const starterSpots = [
     phone: "047-433-0290",
     menu: "リブステーキ（サイズ選択可）",
     price: "要確認",
-    emoji: "🥩",
+    image: "assets/food/steak.jpg",
+    imageAlt: "リブステーキの参考写真",
+    imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Ikinari_Steak_rib_eye_steak.jpg",
     color: "#cddbc4",
     reviews: [],
     isSeed: true,
@@ -163,6 +171,9 @@ function mapSpot(spot) {
     isFromDatabase: true,
     sourceUrl: starterSpot?.sourceUrl,
     infoUrl: spot.info_url || starterSpot?.infoUrl,
+    image: starterSpot?.image || "assets/food/ramen.jpg",
+    imageAlt: starterSpot?.imageAlt || "お店の参考写真",
+    imageSourceUrl: starterSpot?.imageSourceUrl || "https://commons.wikimedia.org/wiki/File:Ramen-2.jpg",
     reviews: (spot.reviews || []).map(mapReview)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
   };
@@ -226,7 +237,8 @@ function render() {
         <div class="card-visual" style="--card-bg:${escapeHTML(spot.color || "#e9eee2")}">
           <span class="card-category">${escapeHTML(spot.category)}</span>
           ${spot.isSeed ? '<span class="card-sample">初期掲載</span>' : ""}
-          <span class="card-emoji" aria-hidden="true">${escapeHTML(spot.emoji || "🍽️")}</span>
+          <img class="card-photo" src="${escapeHTML(spot.image)}" alt="${escapeHTML(spot.imageAlt)}" loading="lazy" />
+          <span class="card-photo-note">参考写真</span>
           <span class="card-stamp">${stamp}</span>
         </div>
         <div class="card-info">
@@ -311,9 +323,11 @@ function openDetails(id) {
     : "";
   const infoUrl = safeWebUrl(spot.infoUrl);
   const volumeSourceUrl = safeWebUrl(spot.sourceUrl);
+  const imageSourceUrl = safeWebUrl(spot.imageSourceUrl);
   const sourceLinks = [
     infoUrl ? `<a href="${escapeHTML(infoUrl)}" target="_blank" rel="noopener noreferrer">店舗情報</a>` : "",
     volumeSourceUrl ? `<a href="${escapeHTML(volumeSourceUrl)}" target="_blank" rel="noopener noreferrer">大盛り情報（TSグルメ）</a>` : "",
+    imageSourceUrl ? `<a href="${escapeHTML(imageSourceUrl)}" target="_blank" rel="noopener noreferrer">参考写真（Wikimedia Commons・CC0）</a>` : "",
   ].filter(Boolean);
   const sourceHTML = sourceLinks.length
     ? `<p class="source-note">出典：${sourceLinks.join(" ／ ")}。営業時間・価格は変更されることがあるため、来店前にご確認ください。</p>`

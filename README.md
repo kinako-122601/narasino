@@ -14,3 +14,13 @@
 投稿データは Supabase の共有データベースに保存されます。匿名ユーザーが閲覧・追加できるよう Row Level Security を設定しています。投稿の編集・削除やログイン機能はありません。匿名投稿を許可するため、公開前にスパム対策が必要な場合は認証やレート制限を追加してください。
 
 初期掲載店は「二葉海神 第一支店」「福徳食堂」「大乃家食堂」「ビッグテキサス 船橋店」です。住所・営業時間・電話番号を公開情報をもとに掲載し、店舗情報の出典リンクを表示しています。営業時間や価格は変更されることがあるため、来店前に店舗へご確認ください。
+
+## 写真
+
+サイト内の料理写真は Wikimedia Commons の CC0（パブリックドメイン）写真を使用しています。掲載店の実際の料理写真ではなく、参考イメージです。
+
+- ラーメン: [Ramen-2.jpg](https://commons.wikimedia.org/wiki/File:Ramen-2.jpg)
+- カツカレー: [Chicken katsu curry.jpg](https://commons.wikimedia.org/wiki/File:Chicken_katsu_curry.jpg)
+- チキンカツ: [Chicken Cutlet 001.jpg](https://commons.wikimedia.org/wiki/File:Chicken_Cutlet_001.jpg)
+- 海鮮丼: [Seafood bowl.jpg](https://commons.wikimedia.org/wiki/File:Seafood_bowl.jpg)
+- リブステーキ: [Ikinari Steak rib eye steak.jpg](https://commons.wikimedia.org/wiki/File:Ikinari_Steak_rib_eye_steak.jpg)
